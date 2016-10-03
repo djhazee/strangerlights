@@ -1,14 +1,11 @@
+#!/usr/bin/python
+
 # Stranger Things Christmas Lights
 # Author: Paul Larson (djhazee@gmail.com)
 #
 # -Port of the Arduino NeoPixel library strandtest example (Adafruit).
 # -Uses the WS2811 to animate RGB light strings (I am using a 5V, 50x RGB LED strand)
-# -TODO:Initialize lights to general Christmas colors
-  # --> Look at tv show to ensure they all match
-#This will blink a designated light for each letter of the alphabet
-  # --> Ready to test
-# -TODO:Flicker Effects to kick off communication
-  # Works, but needs tweaking
+# -This will blink a designated light for each letter of the alphabet
 
 
 # Import libs used
@@ -35,11 +32,15 @@ BLUE = Color(0,0,255)
 PURPLE = Color(128,0,128)
 YELLOW = Color(255,255,0)
 ORANGE = Color(255,50,0)
+TURQUOISE = Color(64,224,208)
 RANDOM = Color(random.randint(0,255),random.randint(0,255),random.randint(0,255))
 
-#list of colors
-COLORS = [RED,GREEN,BLUE,PURPLE,YELLOW,ORANGE]
+#list of colors, tried to match the show as close as possible
+COLORS = [YELLOW,PURPLE,RED,GREEN,BLUE,YELLOW,RED,TURQUOISE,
+          GREEN,RED,BLUE,GREEN,ORANGE,PURPLE,YELLOW,GREEN,RED,
+          TURQUOISE,ORANGE,YELLOW,BLUE,PURPLE,GREEN,YELLOW,RED,ORANGE]
 
+#bitmasks used in scaling RGB values
 REDMASK = 0b111111110000000000000000
 GREENMASK = 0b000000001111111100000000
 BLUEMASK = 0b000000000000000011111111
@@ -134,7 +135,8 @@ def flicker(strip, ledNo):
     #turn back on at random scaled color brightness
     #modifier = random.randint(30,120)/100
     modifier = 1
-    #TODO:remove modifier?
+    #TODO: fix modifier so each RGB value is scaled. 
+    #      Doesn't work that well so modifier is set to 1. 
     newBlue = int(currBlue * modifier)
     if newBlue > 255:
       newBlue = 255
@@ -166,8 +168,9 @@ def runBlink(strip):
   #first blink the word "run", one letter at a time
   blinkWords(strip, word)
 
-  for loop in range(40):
-    #blink all three letters at the same time
+  #now frantically blink all 3 letters
+  for loop in range(20):
+    #turn on all three letters at the same time
     for character in word:
       if character in ALPHABET:
         strip.setPixelColor(ALPHABET.index(character)+LIGHTSHIFT, RED)
@@ -175,11 +178,23 @@ def runBlink(strip):
 
     time.sleep(random.randint(15,100)/1000.0)
 
-    #blink all three letters at the same time
+    #turn off all three letters at the same time
     for character in word:
       if character in ALPHABET:
         strip.setPixelColor(ALPHABET.index(character)+LIGHTSHIFT, OFF)
         strip.show()
+
+    time.sleep(random.randint(50,150)/1000.0)
+
+  #now frantically blink all lights 
+  for loop in range(10):
+    #initialize all the lights
+    initLights(strip)
+
+    #kill all lights
+    for led in range(len(ALPHABET)):
+      strip.setPixelColor(led+LIGHTSHIFT, OFF)
+      strip.show()
 
     time.sleep(random.randint(50,150)/1000.0)
 
@@ -206,7 +221,7 @@ if __name__ == '__main__':
     time.sleep(5)
 
     #flicker each light, no delay between each
-    for i in range(25):
+    for i in range(20):
       flicker(strip,random.randint(LIGHTSHIFT,len(ALPHABET)+LIGHTSHIFT))
       time.sleep(random.randint(10,70)/1000.0)
 
