@@ -32,15 +32,40 @@ WHITE = Color(255,255,255)
 RED = Color(255,0,0)
 GREEN = Color(0,255,0)
 BLUE = Color(0,0,255)
+PURPLE = Color(128,0,128)
+YELLOW = Color(255,255,0)
+ORANGE = Color(255,50,0)
 RANDOM = Color(random.randint(0,255),random.randint(0,255),random.randint(0,255))
+
+#list of colors
+COLORS = [RED,GREEN,BLUE,PURPLE,YELLOW,ORANGE]
 
 REDMASK = 0b111111110000000000000000
 GREENMASK = 0b000000001111111100000000
 BLUEMASK = 0b000000000000000011111111
 
 # Other vars
-ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
-FLICKERLOOP = 10  #number of loops to flicker
+ALPHABET = 'abcdefghijklmnopqrstuvwxyz'  #alphabet that will be used
+LIGHTSHIFT = 24  #shift the lights down the strand to the other end 
+FLICKERLOOP = 3  #number of loops to flicker
+
+def initLights(strip):
+  """
+  initializes the light strand colors 
+
+  inputs: 
+    strip = color strip instance to action against
+
+  outputs:
+    <none>
+  """
+  colorLen = len(COLORS)
+  #Initialize all LEDs
+  for i in range(len(ALPHABET)):
+    strip.setPixelColor(i+LIGHTSHIFT, COLORS[i%colorLen])
+    strip.show()
+    
+
 
 def blinkWords(strip, word):
   """
@@ -53,22 +78,28 @@ def blinkWords(strip, word):
   outputs:
     <none>
   """
+  s = list(range(len(ALPHABET)))
+  random.shuffle(s)
 
-  #first, kill all lights
+  #first, kill all lights in a semi-random fashion
   for led in range(len(ALPHABET)):
-    strip.setPixelColor(led, OFF)
+    strip.setPixelColor(s[led]+LIGHTSHIFT, OFF)
     strip.show()
+    time.sleep(random.randint(10,80)/1000.0)
+
+  #quick delay
+  time.sleep(2)
 
   #if letter in alphabet, turn on for 1.5 seconds
   #otherwise, stall for 1.5 seconds
   for character in word:
     if character in ALPHABET:
-      strip.setPixelColor(ALPHABET.index(character), BLUE)
+      strip.setPixelColor(ALPHABET.index(character)+LIGHTSHIFT, RED)
       strip.show()
       time.sleep(1)
-      strip.setPixelColor(ALPHABET.index(character), OFF)
+      strip.setPixelColor(ALPHABET.index(character)+LIGHTSHIFT, OFF)
       strip.show()
-      time.sleep(1)
+      time.sleep(.5)
     else:
       time.sleep(1)
 
@@ -98,12 +129,12 @@ def flicker(strip, ledNo):
     #turn off for a random short period of time
     strip.setPixelColor(ledNo, OFF)
     strip.show()
-    time.sleep(random.randint(10,100)/1000.0)
+    time.sleep(random.randint(10,50)/1000.0)
 
     #turn back on at random scaled color brightness
-#    modifier = random.randint(30,120)/100
+    #modifier = random.randint(30,120)/100
     modifier = 1
-#TODO:remove modifier?
+    #TODO:remove modifier?
     newBlue = int(currBlue * modifier)
     if newBlue > 255:
       newBlue = 255
@@ -116,10 +147,41 @@ def flicker(strip, ledNo):
     strip.setPixelColor(ledNo, Color(newRed,newGreen,newBlue))
     strip.show()
     #leave on for random short period of time
-    time.sleep(random.randint(10,100)/1000.0)
+    time.sleep(random.randint(10,80)/1000.0)
 
   #restore original LED color
   strip.setPixelColor(ledNo, origColor)
+
+def runBlink(strip):
+  """
+  blinks the RUN letters
+
+  inputs: 
+    strip = color strip instance to action against
+
+  outputs:
+    <none>
+  """
+  word = "run"
+  #first blink the word "run", one letter at a time
+  blinkWords(strip, word)
+
+  for loop in range(40):
+    #blink all three letters at the same time
+    for character in word:
+      if character in ALPHABET:
+        strip.setPixelColor(ALPHABET.index(character)+LIGHTSHIFT, RED)
+        strip.show()
+
+    time.sleep(random.randint(15,100)/1000.0)
+
+    #blink all three letters at the same time
+    for character in word:
+      if character in ALPHABET:
+        strip.setPixelColor(ALPHABET.index(character)+LIGHTSHIFT, OFF)
+        strip.show()
+
+    time.sleep(random.randint(50,150)/1000.0)
 
 # Main program logic follows:
 if __name__ == '__main__':
@@ -133,15 +195,27 @@ if __name__ == '__main__':
 
   while True:
 
-    #Initialize all LEDs
-    for i in range(len(ALPHABET)):
-      strip.setPixelColor(i, RANDOM)
-      strip.show()
+    ##Initialize all LEDs
+    #for i in range(len(ALPHABET)):
+    #  strip.setPixelColor(i+LIGHTSHIFT, Color(random.randint(0,255),random.randint(0,255),random.randint(0,255)))
+    #  strip.show()
+
+    #initialize all the lights
+    initLights(strip)
+    
+    time.sleep(5)
 
     #flicker each light, no delay between each
-    for i in range(5):
-      flicker(strip,random.randint(0,LED_COUNT-1))
+    for i in range(25):
+      flicker(strip,random.randint(LIGHTSHIFT,len(ALPHABET)+LIGHTSHIFT))
+      time.sleep(random.randint(10,70)/1000.0)
+
+    time.sleep(2)
 
     #flash lights to word
-    word = 'run'
+    word = 'its here'
     blinkWords(strip, word)
+    time.sleep(.5)
+    runBlink(strip)
+
+    time.sleep(1)
