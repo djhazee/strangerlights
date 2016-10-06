@@ -36,9 +36,11 @@ TURQUOISE = Color(64,224,208)
 RANDOM = Color(random.randint(0,255),random.randint(0,255),random.randint(0,255))
 
 #list of colors, tried to match the show as close as possible
-COLORS = [YELLOW,PURPLE,RED,GREEN,BLUE,YELLOW,RED,TURQUOISE,
-          GREEN,RED,BLUE,GREEN,ORANGE,PURPLE,YELLOW,GREEN,RED,
-          TURQUOISE,ORANGE,YELLOW,BLUE,PURPLE,GREEN,YELLOW,RED,ORANGE]
+COLORS = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
+          YELLOW,PURPLE,RED,GREEN,BLUE,YELLOW,RED,TURQUOISE,GREEN,RED,BLUE,GREEN,ORANGE,
+          YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE, 
+          ORANGE,RED,YELLOW,GREEN,PURPLE,BLUE,YELLOW,ORANGE,TURQUOISE,RED,GREEN,YELLOW,PURPLE,
+          YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE,ORANGE] 
 
 #bitmasks used in scaling RGB values
 REDMASK = 0b111111110000000000000000
@@ -46,8 +48,9 @@ GREENMASK = 0b000000001111111100000000
 BLUEMASK = 0b000000000000000011111111
 
 # Other vars
-ALPHABET = 'abcdefghijklmnopqrstuvwxyz'  #alphabet that will be used
-LIGHTSHIFT = 24  #shift the lights down the strand to the other end 
+ALPHABET = '*******abcdefghijklm********zyxwvutsrqpon*********'  #alphabet that will be used
+#LIGHTSHIFT = 24  #shift the lights down the strand to the other end 
+LIGHTSHIFT = 0  #shift the lights down the strand to the other end 
 FLICKERLOOP = 3  #number of loops to flicker
 
 def initLights(strip):
