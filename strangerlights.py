@@ -13,6 +13,7 @@ import time
 import random
 from neopixel import *
 
+#Start up random seed
 random.seed()
 
 # LED strip configuration:
@@ -38,7 +39,7 @@ RANDOM = Color(random.randint(0,255),random.randint(0,255),random.randint(0,255)
 #list of colors, tried to match the show as close as possible
 COLORS = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
           YELLOW,PURPLE,RED,GREEN,BLUE,YELLOW,RED,TURQUOISE,GREEN,RED,BLUE,GREEN,ORANGE,
-          YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE, 
+          YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,RED,BLUE, 
           ORANGE,RED,YELLOW,GREEN,PURPLE,BLUE,YELLOW,ORANGE,TURQUOISE,RED,GREEN,YELLOW,PURPLE,
           YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE,ORANGE] 
 
@@ -49,7 +50,6 @@ BLUEMASK = 0b000000000000000011111111
 
 # Other vars
 ALPHABET = '*******abcdefghijklm********zyxwvutsrqpon*********'  #alphabet that will be used
-#LIGHTSHIFT = 24  #shift the lights down the strand to the other end 
 LIGHTSHIFT = 0  #shift the lights down the strand to the other end 
 FLICKERLOOP = 3  #number of loops to flicker
 
@@ -67,9 +67,7 @@ def initLights(strip):
   #Initialize all LEDs
   for i in range(len(ALPHABET)):
     strip.setPixelColor(i+LIGHTSHIFT, COLORS[i%colorLen])
-    strip.show()
-    
-
+  strip.show()
 
 def blinkWords(strip, word):
   """
@@ -82,6 +80,7 @@ def blinkWords(strip, word):
   outputs:
     <none>
   """
+  #create a list of jumbled ints
   s = list(range(len(ALPHABET)))
   random.shuffle(s)
 
@@ -92,10 +91,10 @@ def blinkWords(strip, word):
     time.sleep(random.randint(10,80)/1000.0)
 
   #quick delay
-  time.sleep(2)
+  time.sleep(1.75)
 
-  #if letter in alphabet, turn on for 1.5 seconds
-  #otherwise, stall for 1.5 seconds
+  #if letter in alphabet, turn on 
+  #otherwise, stall
   for character in word:
     if character in ALPHABET:
       strip.setPixelColor(ALPHABET.index(character)+LIGHTSHIFT, RED)
@@ -105,7 +104,7 @@ def blinkWords(strip, word):
       strip.show()
       time.sleep(.5)
     else:
-      time.sleep(1)
+      time.sleep(.75)
 
 def flicker(strip, ledNo):
   """
@@ -177,7 +176,7 @@ def runBlink(strip):
     for character in word:
       if character in ALPHABET:
         strip.setPixelColor(ALPHABET.index(character)+LIGHTSHIFT, RED)
-        strip.show()
+    strip.show()
 
     time.sleep(random.randint(15,100)/1000.0)
 
@@ -185,19 +184,21 @@ def runBlink(strip):
     for character in word:
       if character in ALPHABET:
         strip.setPixelColor(ALPHABET.index(character)+LIGHTSHIFT, OFF)
-        strip.show()
+    strip.show()
 
     time.sleep(random.randint(50,150)/1000.0)
 
   #now frantically blink all lights 
-  for loop in range(10):
+  for loop in range(15):
     #initialize all the lights
     initLights(strip)
+
+    time.sleep(random.randint(50,150)/1000.0)
 
     #kill all lights
     for led in range(len(ALPHABET)):
       strip.setPixelColor(led+LIGHTSHIFT, OFF)
-      strip.show()
+    strip.show()
 
     time.sleep(random.randint(50,150)/1000.0)
 
@@ -221,19 +222,29 @@ if __name__ == '__main__':
     #initialize all the lights
     initLights(strip)
     
-    time.sleep(5)
+    time.sleep(random.randint(5,15))
 
     #flicker each light, no delay between each
     for i in range(20):
       flicker(strip,random.randint(LIGHTSHIFT,len(ALPHABET)+LIGHTSHIFT))
-      time.sleep(random.randint(10,70)/1000.0)
+      time.sleep(random.randint(10,50)/1000.0)
 
     time.sleep(2)
 
     #flash lights to word
     word = 'its here'
     blinkWords(strip, word)
-    time.sleep(.5)
     runBlink(strip)
-
     time.sleep(1)
+
+    #create a list of jumbled ints
+    s = list(range(len(ALPHABET)))
+    random.shuffle(s)
+
+    #turn on each light in a semi-random fasion
+    colorLen = len(COLORS)
+    #Initialize all LEDs
+    for i in range(len(ALPHABET)):
+      strip.setPixelColor(s[i]+LIGHTSHIFT, COLORS[s[i]%colorLen])
+      strip.show()
+      time.sleep(random.randint(10,80)/1000.0)
